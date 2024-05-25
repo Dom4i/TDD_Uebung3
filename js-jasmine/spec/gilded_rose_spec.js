@@ -62,4 +62,11 @@ describe("Gilded Rose", function() {
     expect(items[0].quality).toEqual(8);
   });
 
+  it("'Sulfuras': its Quality is 80 and it never alters", function() { //Test case 11
+    const gildedRose = new Shop([ new Item("Sulfuras, Hand of Ragnaros", 1, 80) ]);
+    const items = gildedRose.updateQuality();
+    expect(items[0].quality).toEqual(80);
+  });
+
+
 });
