@@ -49,6 +49,12 @@ class Shop {
       this.decreaseQuality(item, item.name === 'Conjured Mana Cake' ? 2 : 1); //Conjured items degrade in Quality twice as fast as normal items
     }
   }
+  
+  updateBackstagePassQuality(item) { 
+    this.increaseQuality(item, 1);
+    if (item.sellIn <= 10) this.increaseQuality(item, 1); //Quality increases by 2 when there are 10 days or less
+    if (item.sellIn <= 5) this.increaseQuality(item, 1); //Quality increases by 3 when there are 5 days or less but
+  }
 
   increaseQuality(item, amount) { //increase quality by amount, but not above 50
     if (item.quality < 50) {
