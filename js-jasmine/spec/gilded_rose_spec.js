@@ -55,5 +55,11 @@ describe("Gilded Rose", function() {
     const items = gildedRose.updateQuality();
     expect(items[0].quality).toEqual(0);
   });
-  
+
+  it("Once the sell by date has passed, Quality degrades twice as fast", function() { //Test case 10
+    const gildedRose = new Shop([ new Item("foo", 0, 10) ]);
+    const items = gildedRose.updateQuality();
+    expect(items[0].quality).toEqual(8);
+  });
+
 });
