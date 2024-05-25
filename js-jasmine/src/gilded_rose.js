@@ -11,53 +11,55 @@ class Shop {
     this.items = items;
   }
   updateQuality() {
-    for (var i = 0; i < this.items.length; i++) {
-      if (this.items[i].name != 'Aged Brie' && this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
-        if (this.items[i].quality > 0) {
-          if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-            this.items[i].quality = this.items[i].quality - 1;
-          }
-        }
-      } else {
-        if (this.items[i].quality < 50) {
-          this.items[i].quality = this.items[i].quality + 1;
-          if (this.items[i].name == 'Backstage passes to a TAFKAL80ETC concert') {
-            if (this.items[i].sellIn < 11) {
-              if (this.items[i].quality < 50) {
-                this.items[i].quality = this.items[i].quality + 1;
-              }
-            }
-            if (this.items[i].sellIn < 6) {
-              if (this.items[i].quality < 50) {
-                this.items[i].quality = this.items[i].quality + 1;
-              }
-            }
-          }
-        }
+    this.items.forEach(item => {
+      this.updateItemQuality(item); //At the end of each day our system lowers both values for every item
+      this.updateItemSellIn(item); //--,,--
+      if (item.sellIn < 0) { //Once the sell by date has passed, Quality degrades twice as fast
+        this.handleExpiredItem(item);
       }
-      if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-        this.items[i].sellIn = this.items[i].sellIn - 1;
-      }
-      if (this.items[i].sellIn < 0) {
-        if (this.items[i].name != 'Aged Brie') {
-          if (this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
-            if (this.items[i].quality > 0) {
-              if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-                this.items[i].quality = this.items[i].quality - 1;
-              }
-            }
-          } else {
-            this.items[i].quality = this.items[i].quality - this.items[i].quality;
-          }
-        } else {
-          if (this.items[i].quality < 50) {
-            this.items[i].quality = this.items[i].quality + 1;
-          }
-        }
-      }
-    }
-
+    });
     return this.items;
+  }
+
+  updateItemQuality(item) {
+    if (item.name === 'Sulfuras, Hand of Ragnaros') return; //"Sulfuras", never has to be sold or decreases in Quality
+    let factor = item.name === 'Conjured Mana Cake' ? 2 : 1; //Conjured items degrade in Quality twice as fast as normal items
+    
+    if (item.name === 'Aged Brie') { //Aged Brie increases in Quality the older it gets
+      this.increaseQuality(item, 1);
+    } else if (item.name === 'Backstage passes to a TAFKAL80ETC concert') { //special rules
+      this.updateBackstagePassQuality(item);
+    } else {
+      this.decreaseQuality(item, factor);
+    }
+  }
+
+  updateItemSellIn(item) {
+    if (item.name !== 'Sulfuras, Hand of Ragnaros') { //"Sulfuras", never has to decreases in Quality
+      item.sellIn -= 1;
+    }
+  }
+
+  handleExpiredItem(item) {
+    if (item.name === 'Aged Brie') { //Aged Brie increases in Quality the older it gets
+      this.increaseQuality(item, 1);
+    } else if (item.name === 'Backstage passes to a TAFKAL80ETC concert') { //Quality drops to 0 after the concert
+      item.quality = 0;
+    } else {
+      this.decreaseQuality(item, item.name === 'Conjured Mana Cake' ? 2 : 1); //Conjured items degrade in Quality twice as fast as normal items
+    }
+  }
+
+  increaseQuality(item, amount) { //increase quality by amount, but not above 50
+    if (item.quality < 50) {
+      item.quality = Math.min(item.quality + amount, 50); //Quality of an item is never more than 50
+    }
+  }
+
+  decreaseQuality(item, amount) { //decrease quality by amount, but not below 0
+    if (item.quality > 0) {
+      item.quality = Math.max(item.quality - amount, 0); //Quality of an item is never negative
+    }
   }
 }
 module.exports = {
