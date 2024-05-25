@@ -38,4 +38,16 @@ describe("Gilded Rose", function() {
     expect(items[0].quality).toEqual(50);
   });
 
+  it("'Backstage passes' increase in quality(by 2 when there are 10 days or less)", function() { //Test case 7
+    const gildedRose = new Shop([ new Item("Backstage passes to a TAFKAL80ETC concert", 9, 10) ]);
+    const items = gildedRose.updateQuality();
+    expect(items[0].quality).toEqual(12);
+  });
+
+  it("'Backstage passes' increase in quality(by 3 when there are 5 days or less)", function() { //Test case 8
+    const gildedRose = new Shop([ new Item("Backstage passes to a TAFKAL80ETC concert", 5, 10) ]);
+    const items = gildedRose.updateQuality();
+    expect(items[0].quality).toEqual(13);
+  });
+  
 });
